@@ -152,25 +152,29 @@
         // Save player stats to localStorage based on hero type
         function chooseHero(heroType) {
             const starterStats = {
-                warrior: { hp: '100 / 100', attack: 35, defense: 25, speed: 15 },
-                wizard: { hp: '100 / 100', attack: 40, defense: 20, speed: 15 },
-                slime: { hp: '100 / 100', attack: 20, defense: 20, speed: 35 },
+                warrior: { hp: 100, maxHp: 100, attack: 35, defense: 25, speed: 15 },
+                wizard: { hp: 100, maxHp: 100, attack: 40, defense: 20, speed: 15 },
+                slime: { hp: 100, maxHp: 100, attack: 20, defense: 20, speed: 35 },
             };
 
-            const stats = starterStats[heroType] || { hp: '100 / 100', attack: 30, defense: 10, speed: 20 };
+            const stats = starterStats[heroType] || { hp: 100, maxHp: 100, attack: 30, defense: 10, speed: 20 };
 
             const player = {
                 character: heroType,
                 level: 1,
                 hp: stats.hp,
+                maxHp: stats.maxHp,
                 attack: stats.attack,
                 defense: stats.defense,
                 speed: stats.speed,
                 gold: 150,
+                kills: { slime: 0, wolf: 0, jessica: 0, dragon: 0 },
+                currentQuestIndex: 0
             };
 
             localStorage.setItem('player', JSON.stringify(player));
         }
+
 
         document.addEventListener('DOMContentLoaded', () => {
             const heroesSection = document.querySelector('#heroes');
