@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Quest RPG</title>
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+        .door-card {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .door-card:hover {
+            transform: scale(1.05);
+        }
+
+        .door-img {
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .hero-img {
+            max-height: 100px;
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-light">
+    <section id="myGame" class="px-5 py-5">
+        <div class="container text-center">
+
+            <!-- Hero Image -->
+            <div class="mb-5">
+                <img src="assets/img/drag.gif" alt="Your Hero" class="img-fluid hero-img mb-3" />
+                <h2 class="text-warning">Choose Your Challenge</h2>
+            </div>
+
+            <!-- Door Choices -->
+            <div class="row g-4">
+                <!-- Slime Door -->
+                <div class="col-md-4">
+                    <div class="card door-card bg-success bg-opacity-50 text-light text-center shadow-sm">
+                        <img src="assets/img/slime.gif" class="card-img-top p-3 door-img" alt="Fight Slime" />
+                        <div class="card-body">
+                            <h5 class="card-title">Fight Slime</h5>
+                            <p class="card-text">Easy battle. Good for training!</p>
+                            <a id="door-slime" href="battle.html?enemy=slime"
+                                class="btn btn-warning fw-bold w-100">Enter</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wolf Door -->
+                <div class="col-md-4">
+                    <div class="card door-card bg-primary bg-opacity-50 text-light text-center shadow-sm">
+                        <img src="assets/img/wolf.gif" class="card-img-top p-3 door-img" alt="Fight Wolf" />
+                        <div class="card-body">
+                            <h5 class="card-title">Fight Wolf</h5>
+                            <p class="card-text">A fierce beast with sharp instincts.</p>
+                            <a id="door-wolf" href="#" class="btn btn-secondary disabled w-100">Complete the quest
+                                before this one</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dragon Door -->
+                <div class="col-md-4">
+                    <div class="card door-card bg-danger bg-opacity-50 text-light text-center shadow-sm">
+                        <img src="assets/img/jessica.gif" class="card-img-top p-3 door-img" alt="Fight Dragon" />
+                        <div class="card-body">
+                            <h5 class="card-title">Fight Jessica</h5>
+                            <p class="card-text">Strongest woman on computer science.</p>
+                            <a id="door-dragon" href="#" class="btn btn-secondary disabled w-100">Complete the quest
+                                before this one</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="character.html" class="btn btn-outline-light">
+                    <i class="bi bi-arrow-left-circle me-2"></i>Back to Character
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = JSON.parse(localStorage.getItem('player'));
+            if (!player || !player.character) {
+                alert('No character selected. Redirecting...');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const heroImages = {
+                warrior: 'assets/img/warrior.gif',
+                wizard: 'assets/img/wizard.gif',
+                slime: 'assets/img/slime.gif'
+            };
+
+            const heroImg = document.querySelector('.hero-img');
+            heroImg.src = heroImages[player.character] || 'assets/img/warrior.gif';
+            heroImg.alt = player.character;
+
+            // Unlock doors based on current quest
+            const questChain = ['slime', 'wolf', 'jessica', 'dragon'];
+            const currentQuestIndex = player.currentQuestIndex ?? 0;
+
+            // Mapping door IDs to quest keys
+            const doorMap = {
+                slime: 'door-slime',
+                wolf: 'door-wolf',
+                jessica: 'door-dragon', // Note: jessica uses dragon door in UI
+            };
+
+            for (let i = 0; i <= currentQuestIndex; i++) {
+                const questKey = questChain[i];
+                const doorId = doorMap[questKey];
+                const door = document.getElementById(doorId);
+
+                if (door) {
+                    door.href = `battle.html?enemy=${questKey}`;
+                    door.classList.remove('btn-secondary', 'disabled');
+                    door.classList.add('btn-warning', 'fw-bold');
+                    door.textContent = `Enter`;
+                }
+            }
+        });
+    </script>
+
+
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,224 @@
+@font-face {
+    font-family: 'Cinzel';
+    src: url('../fonts/Cinzel-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cinzel';
+    src: url('../fonts/Cinzel-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Cinzel', serif;
+    background: radial-gradient(circle at center,
+            #a0522d 0%,
+            #471504 60%);
+}
+
+.navbar {
+    position: relative;
+    z-index: 4;
+}
+
+.navbar a {
+    font-size: 1.5rem;
+}
+
+.hero {
+    position: relative;
+    height: 100vh;
+    background: url('../img/bg.jpg') top center no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+}
+
+.hero.dark-mode {
+    cursor: url('../img/torch.png') 16 16, auto;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150vw;
+    height: 150vh;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(255, 255, 255, 0.1) 0%,
+            rgba(0, 0, 0, 0.85) 40%);
+    pointer-events: none;
+    z-index: 2;
+    transform: translate(-25%, -25%);
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+.hero.dark-mode::before {
+    opacity: 1;
+}
+
+.btn-custom {
+    background-color: #7c311e;
+    color: #fceabb;
+    padding: 12px 28px;
+    font-size: 1.1rem;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    /* glowing effect */
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.btn-custom:hover {
+    background-color: #a94438;
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#heroes .card,
+#myHero .card {
+    height: 600px;
+    padding: 10px 40px;
+    border: 5px solid #d4af37;
+    background: radial-gradient(circle at center,
+            #a0522d 0%,
+            #4715043b 60%);
+    color: #ededed;
+}
+
+#heroes img {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    flex: 1;
+}
+
+#myHero img {
+    height: 300px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.drag-overlay {
+    position: absolute;
+    width: 500px;
+    z-index: 3;
+}
+
+.hero.dark-mode .drag-overlay {
+    filter: brightness(60%);
+    transition: filter 0.2s ease;
+}
+
+.hero.dark-mode .drag-overlay.lit {
+    filter: brightness(120%);
+    /* filter: brightness(120%) drop-shadow(0 0 10px #ffefc1); */
+}
+
+.drag1 {
+    top: -80px;
+    animation: fly-left 10s linear infinite;
+    right: 0;
+}
+
+.drag2 {
+    top: 0;
+    right: -200px;
+    animation: fly-left 15s linear infinite;
+    animation-fill-mode: both;
+    animation-delay: 7s;
+}
+
+.drag3 {
+    top: 300px;
+    animation: fly-right 15s linear infinite;
+    left: 0;
+    animation-fill-mode: both;
+    animation-delay: 12s;
+}
+
+@keyframes fly-left {
+    0% {
+        transform: translateX(50vw);
+        opacity: 0;
+    }
+
+    5% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-100vw);
+        opacity: 1;
+    }
+}
+
+@keyframes fly-right {
+    0% {
+        transform: translateX(-100vw) scaleX(-1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100vw) scaleX(-1);
+        opacity: 1;
+    }
+}

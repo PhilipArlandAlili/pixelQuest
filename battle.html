@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Quest RPG</title>
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+        body {
+            background: url('assets/img/collosseum.jpg') top center no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .battle-container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .character-img {
+            max-height: 200px;
+        }
+
+        .vs-text {
+            font-size: 10rem;
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .hp-bar {
+            height: 1rem;
+            background-color: #dc3545;
+        }
+
+        .hp-container {
+            background-color: #343a40;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body class="bg-dark text-light">
+    <section id="myGame" class="battle-container px-5 py-5">
+        <div class="container text-center">
+            <h2 class="text-warning mb-4">Battle Start!</h2>
+
+            <div class="row align-items-center">
+                <!-- Hero -->
+                <div class="col-md-4">
+                    <img src="assets/img/dragon.gif" alt="Hero" class="img-fluid hero-img character-img mb-2" />
+                    <h4 class="text-info">Hero</h4>
+                    <div class="hp-container mb-3">
+                        <div id="hero-hp" class="hp-bar" style="width: 100%"></div>
+                    </div>
+                    <small id="hero-hp-text" class="text-light d-block mt-1">100 HP</small>
+                </div>
+
+                <!-- VS -->
+                <div class="col-md-4">
+                    <div class="vs-text my-4">VS</div>
+                </div>
+
+                <!-- Enemy -->
+                <div class="col-md-4">
+                    <img id="enemy-img" src="" alt="Enemy" class="img-fluid character-img mb-2"
+                        style="transform: scaleX(-1);" />
+                    <h4 id="enemy-name" class="text-danger"></h4>
+                    <div class="hp-container mb-3">
+                        <div id="enemy-hp" class="hp-bar bg-success" style="width: 100%"></div>
+                    </div>
+                    <small id="enemy-hp-text" class="text-light"></small>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-5 gap-5">
+                <a href="game.html" class="me-3 btn btn-danger btn-lg fw-bold">Run</a>
+                <button id="attackBtn" class="btn btn-warning btn-lg fw-bold">
+                    <i class="bi bi-lightning-fill me-2"></i>Attack
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Result Modal -->
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultModalLabel">Battle Result</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="resultModalBody">
+                    <!-- Dynamic result message here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="resultModalBtn" class="btn btn-warning">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const playerData = JSON.parse(localStorage.getItem('player')) || {};
+
+            // Set up hero images
+            if (playerData.character) {
+                const heroImages = {
+                    warrior: 'assets/img/warrior.gif',
+                    wizard: 'assets/img/wizard.gif',
+                    slime: 'assets/img/slime.gif'
+                };
+                const heroImgSrc = heroImages[playerData.character] || heroImages.warrior;
+                const heroImgEl = document.querySelector('.hero-img');
+                if (heroImgEl) {
+                    heroImgEl.src = heroImgSrc;
+                    heroImgEl.alt = playerData.character;
+                }
+            }
+
+            // Enemy definitions
+            const enemies = {
+                slime: { name: "Slime", img: "assets/img/slime.gif", hp: 50, gold: 25 },
+                wolf: { name: "Wolf", img: "assets/img/wolf.gif", hp: 80, gold: 40 },
+                jessica: { name: "Jessica", img: "assets/img/jessica.gif", hp: 150, gold: 80 }
+            };
+
+            // Initialize kills counts if missing
+            playerData.kills = playerData.kills || {
+                slime: 0,
+                wolf: 0,
+                jessica: 0,
+                dragon: 0
+            };
+
+            // Quest chain for advancing quests (should match your character.html questChain)
+            const questChain = [
+                { key: 'slime', target: 3, description: 'Defeat Slimes', reward: 25 },
+                { key: 'wolf', target: 5, description: 'Defeat Wolves', reward: 50 },
+                { key: 'jessica', target: 1, description: 'Defeat Jessica', reward: 100 },
+                { key: 'dragon', target: 1, description: 'Defeat Dragon', reward: 150 }
+            ];
+
+            // Current quest index init
+            playerData.currentQuestIndex = playerData.currentQuestIndex ?? 0;
+
+            // Get enemy from URL
+            const params = new URLSearchParams(window.location.search);
+            const enemyKey = params.get("enemy") || "slime";
+            const enemy = enemies[enemyKey];
+
+            if (!enemy) {
+                alert("Unknown enemy!");
+                window.location.href = "game.html";
+                return;
+            }
+
+            // Set enemy info in DOM
+            document.getElementById("enemy-name").innerText = enemy.name;
+            document.getElementById("enemy-img").src = enemy.img;
+
+            // HP initialization
+            let heroHP = playerData.hp ?? 100;
+            let maxHeroHP = playerData.maxHp ?? 100;
+            let enemyHP = enemy.hp;
+
+            // HP bars and text
+            const heroBar = document.getElementById("hero-hp");
+            const enemyBar = document.getElementById("enemy-hp");
+
+            heroBar.style.width = `${(heroHP / maxHeroHP) * 100}%`;
+            enemyBar.style.width = `100%`;
+
+            document.getElementById('hero-hp-text').textContent = `${heroHP} HP`;
+            document.getElementById('enemy-hp-text').textContent = `${enemyHP} HP`;
+
+            // Bootstrap modal elements
+            const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+            const resultModalBody = document.getElementById('resultModalBody');
+            const resultModalBtn = document.getElementById('resultModalBtn');
+
+            function advanceQuestIfNeeded() {
+                const currentQuest = questChain[playerData.currentQuestIndex];
+                if (!currentQuest) return; // No quest to advance
+
+                const killsForQuest = playerData.kills[currentQuest.key] || 0;
+
+                if (killsForQuest >= currentQuest.target) {
+                    playerData.gold = (playerData.gold || 0) + currentQuest.reward; // 💰 Reward gold
+                    playerData.currentQuestIndex++; // Advance to next quest
+
+                    // Optional: show a success message (you can replace this with a modal or toast)
+                    alert(`Quest complete: ${currentQuest.description}! You earned ${currentQuest.reward} gold!`);
+                }
+            }
+
+            document.getElementById("attackBtn").addEventListener("click", () => {
+                const heroDamage = Math.floor(Math.random() * 15) + 5;
+                const enemyDamage = Math.floor(Math.random() * 10) + 3;
+
+                enemyHP = Math.max(0, enemyHP - heroDamage);
+                heroHP = Math.max(0, heroHP - enemyDamage);
+
+                // Update bars and text
+                heroBar.style.width = `${(heroHP / maxHeroHP) * 100}%`;
+                enemyBar.style.width = `${(enemyHP / enemy.hp) * 100}%`;
+                document.getElementById('hero-hp-text').textContent = `${heroHP} HP`;
+                document.getElementById('enemy-hp-text').textContent = `${enemyHP} HP`;
+
+                if (enemyHP === 0) {
+                    // Win condition
+                    playerData.kills[enemyKey] = (playerData.kills[enemyKey] || 0) + 1;
+                    playerData.gold = (playerData.gold || 0) + enemy.gold;
+                    playerData.hp = heroHP; // restore HP after victory
+
+                    advanceQuestIfNeeded();
+
+                    localStorage.setItem('player', JSON.stringify(playerData));
+
+                    resultModalBody.textContent = `You defeated the ${enemy.name}! You earned ${enemy.gold} gold.`;
+                    resultModal.show();
+
+                    resultModalBtn.onclick = () => {
+                        resultModal.hide();
+                        window.location.href = "game.html";
+                    };
+                } else if (heroHP === 0) {
+                    // Lose condition
+                    playerData.hp = playerData.maxHp; // restore HP after defeat
+                    localStorage.setItem('player', JSON.stringify(playerData));
+
+                    resultModalBody.textContent = `You were defeated by the ${enemy.name}...`;
+                    resultModal.show();
+
+                    resultModalBtn.onclick = () => {
+                        resultModal.hide();
+                        window.location.href = "game.html";
+                    };
+                } else {
+                    // Battle continues - save mid-fight HP
+                    playerData.hp = heroHP;
+                    localStorage.setItem('player', JSON.stringify(playerData));
+                }
+            });
+        });
+    </script>
+
+
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
