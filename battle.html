@@ -53,10 +53,56 @@
             border-radius: 0.25rem;
             overflow: hidden;
         }
+
+        .skill-button.selected {
+            background-color: #28a745 !important;
+            color: white !important;
+            box-shadow: 0 0 12px rgba(40, 167, 69, 0.8);
+        }
+
+        .damage-badge {
+            display: inline-block;
+            font-weight: bold;
+            padding: 4px 8px;
+            margin-left: 10px;
+            border-radius: 20px;
+            animation: floatUp 1.2s ease-out forwards;
+            opacity: 0;
+            position: relative;
+            top: 0;
+        }
+
+        .damage-hero {
+            background-color: rgba(220, 53, 69, 0.9);
+            /* red */
+            color: white;
+        }
+
+        .damage-enemy {
+            background-color: rgba(255, 193, 7, 0.9);
+            /* yellow */
+            color: black;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 0;
+                top: 10px;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                top: -20px;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-dark text-light">
+<body>
     <section id="myGame" class="battle-container px-5 py-5">
         <div class="container text-center">
             <h2 class="text-warning mb-4">Battle Start!</h2>
@@ -64,17 +110,46 @@
             <div class="row align-items-center">
                 <!-- Hero -->
                 <div class="col-md-4">
-                    <img src="assets/img/dragon.gif" alt="Hero" class="img-fluid hero-img character-img mb-2" />
-                    <h4 class="text-info">Hero</h4>
-                    <div class="hp-container mb-3">
-                        <div id="hero-hp" class="hp-bar" style="width: 100%"></div>
+                    <div class="hero-container">
+                        <img src="assets/img/dragon.gif" alt="Hero" class="img-fluid hero-img character-img mb-2" />
+                        <h4 class="text-info">Hero</h4>
+                        <div class="hp-container mb-3">
+                            <div id="hero-hp" class="hp-bar" style="width: 100%"></div>
+                        </div>
+                        <small id="hero-hp-text" class="text-light d-block mt-1">100 HP</small>
                     </div>
-                    <small id="hero-hp-text" class="text-light d-block mt-1">100 HP</small>
+                    <div class="hero-skills mt-5">
+                        <div class="row row-cols-2 g-3 px-5">
+                            <div class="col">
+                                <button id="btn-basic"
+                                    class="border border-light skill-button btn btn-warning w-100 h-100 py-2"></button>
+                            </div>
+                            <div class="col">
+                                <button id="btn-attack"
+                                    class="border border-light skill-button btn btn-warning w-100 h-100 py-2"></button>
+                            </div>
+                            <div class="col">
+                                <button id="btn-buff-skill"
+                                    class="border border-light skill-button btn btn-warning w-100 h-100 py-2"></button>
+                            </div>
+                            <div class="col">
+                                <button id="btn-run"
+                                    class="border border-light skill-button btn btn-danger w-100 h-100 py-2"></button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- VS -->
                 <div class="col-md-4">
                     <div class="vs-text my-4">VS</div>
+                    <!-- Action Buttons -->
+                    <div class="gap-5">
+                        <button id="attackBtn" class="btn btn-warning btn-lg fw-bold">
+                            <i class="bi bi-lightning-fill me-2"></i>Attack
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Enemy -->
@@ -89,13 +164,7 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="mt-5 gap-5">
-                <a href="game.html" class="me-3 btn btn-danger btn-lg fw-bold">Run</a>
-                <button id="attackBtn" class="btn btn-warning btn-lg fw-bold">
-                    <i class="bi bi-lightning-fill me-2"></i>Attack
-                </button>
-            </div>
+
         </div>
     </section>
 
@@ -118,12 +187,25 @@
         </div>
     </div>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            let selectedSkill = null;
             const playerData = JSON.parse(localStorage.getItem('player')) || {};
 
-            // Set up hero images
+            // === Validate essential player data ===
+            if (!playerData.skills) {
+                alert("Skills not found! Go back and choose your hero first.");
+                window.location.href = "character.html";
+                return;
+            }
+
+            playerData.attack = playerData.attack ?? 10;
+            playerData.defense = playerData.defense ?? 5;
+            playerData.hp = playerData.hp ?? 100;
+            playerData.maxHp = playerData.maxHp ?? 100;
+            playerData.gold = playerData.gold ?? 0;
+
+            // === Set hero image ===
             if (playerData.character) {
                 const heroImages = {
                     warrior: 'assets/img/warrior.gif',
@@ -138,22 +220,19 @@
                 }
             }
 
-            // Enemy definitions
+            // === Define enemies ===
             const enemies = {
-                slime: { name: "Slime", img: "assets/img/slime.gif", hp: 50, gold: 25 },
-                wolf: { name: "Wolf", img: "assets/img/wolf.gif", hp: 80, gold: 40 },
-                jessica: { name: "Jessica", img: "assets/img/jessica.gif", hp: 150, gold: 80 }
+                slime: { name: "Slime", img: "assets/img/slime.gif", hp: 100, gold: 25, attack: 15, defense: 5 },
+                wolf: { name: "Wolf", img: "assets/img/wolf.gif", hp: 150, gold: 40, attack: 25, defense: 8 },
+                jessica: { name: "Jessica", img: "assets/img/jessica.gif", hp: 200, gold: 80, attack: 40, defense: 12 },
+                dragon: { name: "Dragon", img: "assets/img/dragon.gif", hp: 300, gold: 150, attack: 60, defense: 18 }
             };
 
-            // Initialize kills counts if missing
+            // === Initialize kills and quest progress ===
             playerData.kills = playerData.kills || {
-                slime: 0,
-                wolf: 0,
-                jessica: 0,
-                dragon: 0
+                slime: 0, wolf: 0, jessica: 0, dragon: 0
             };
 
-            // Quest chain for advancing quests (should match your character.html questChain)
             const questChain = [
                 { key: 'slime', target: 3, description: 'Defeat Slimes', reward: 25 },
                 { key: 'wolf', target: 5, description: 'Defeat Wolves', reward: 50 },
@@ -161,10 +240,9 @@
                 { key: 'dragon', target: 1, description: 'Defeat Dragon', reward: 150 }
             ];
 
-            // Current quest index init
             playerData.currentQuestIndex = playerData.currentQuestIndex ?? 0;
 
-            // Get enemy from URL
+            // === Load enemy from URL ===
             const params = new URLSearchParams(window.location.search);
             const enemyKey = params.get("enemy") || "slime";
             const enemy = enemies[enemyKey];
@@ -175,95 +253,277 @@
                 return;
             }
 
-            // Set enemy info in DOM
+            // === Set enemy info ===
             document.getElementById("enemy-name").innerText = enemy.name;
             document.getElementById("enemy-img").src = enemy.img;
 
-            // HP initialization
-            let heroHP = playerData.hp ?? 100;
-            let maxHeroHP = playerData.maxHp ?? 100;
+            // === Initialize HP ===
+            let heroHP = playerData.hp;
+            let maxHeroHP = playerData.maxHp;
             let enemyHP = enemy.hp;
 
-            // HP bars and text
             const heroBar = document.getElementById("hero-hp");
             const enemyBar = document.getElementById("enemy-hp");
 
-            heroBar.style.width = `${(heroHP / maxHeroHP) * 100}%`;
-            enemyBar.style.width = `100%`;
+            function updateHPBars(heroDamage = 0, enemyDamage = 0) {
+                heroBar.style.width = `${(heroHP / maxHeroHP) * 100}%`;
+                enemyBar.style.width = `${(enemyHP / enemy.hp) * 100}%`;
 
-            document.getElementById('hero-hp-text').textContent = `${heroHP} HP`;
-            document.getElementById('enemy-hp-text').textContent = `${enemyHP} HP`;
+                const heroText = document.getElementById('hero-hp-text');
+                const enemyText = document.getElementById('enemy-hp-text');
 
-            // Bootstrap modal elements
+                heroText.innerHTML = `${heroHP} HP`;
+                enemyText.innerHTML = `${enemyHP} HP`;
+
+                if (heroDamage > 0) {
+                    const dmg = document.createElement('span');
+                    dmg.className = 'damage-badge damage-hero';
+                    dmg.textContent = `-${heroDamage}`;
+                    heroText.appendChild(dmg);
+
+                    setTimeout(() => dmg.remove(), 1200);
+                }
+
+                if (enemyDamage > 0) {
+                    const dmg = document.createElement('span');
+                    dmg.className = 'damage-badge damage-enemy';
+                    dmg.textContent = `-${enemyDamage}`;
+                    enemyText.appendChild(dmg);
+
+                    setTimeout(() => dmg.remove(), 1200);
+                }
+            }
+
+            updateHPBars();
+
             const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
             const resultModalBody = document.getElementById('resultModalBody');
             const resultModalBtn = document.getElementById('resultModalBtn');
 
+            function calculateDamage(basePower, attackerStat, defenderStat) {
+                const baseDamage = basePower + attackerStat - defenderStat;
+                const min = Math.floor(baseDamage * 0.8);
+                const max = Math.ceil(baseDamage * 1.2);
+                const finalDamage = Math.floor(Math.random() * (max - min + 1)) + min;
+                return Math.max(1, finalDamage);
+            }
+
+            function enemyAttack() {
+                const baseEnemyDamage = Math.floor(Math.random() * 10) + 10; // Randomness
+                return calculateDamage(baseEnemyDamage, enemy.attack, playerData.defense);
+            }
+
             function advanceQuestIfNeeded() {
                 const currentQuest = questChain[playerData.currentQuestIndex];
-                if (!currentQuest) return; // No quest to advance
-
-                const killsForQuest = playerData.kills[currentQuest.key] || 0;
-
-                if (killsForQuest >= currentQuest.target) {
-                    playerData.gold = (playerData.gold || 0) + currentQuest.reward; // 💰 Reward gold
-                    playerData.currentQuestIndex++; // Advance to next quest
-
-                    // Optional: show a success message (you can replace this with a modal or toast)
+                if (!currentQuest) return;
+                const kills = playerData.kills[currentQuest.key] || 0;
+                if (kills >= currentQuest.target) {
+                    playerData.gold += currentQuest.reward;
+                    playerData.currentQuestIndex++;
                     alert(`Quest complete: ${currentQuest.description}! You earned ${currentQuest.reward} gold!`);
                 }
             }
 
-            document.getElementById("attackBtn").addEventListener("click", () => {
-                const heroDamage = Math.floor(Math.random() * 15) + 5;
-                const enemyDamage = Math.floor(Math.random() * 10) + 3;
-
-                enemyHP = Math.max(0, enemyHP - heroDamage);
-                heroHP = Math.max(0, heroHP - enemyDamage);
-
-                // Update bars and text
-                heroBar.style.width = `${(heroHP / maxHeroHP) * 100}%`;
-                enemyBar.style.width = `${(enemyHP / enemy.hp) * 100}%`;
-                document.getElementById('hero-hp-text').textContent = `${heroHP} HP`;
-                document.getElementById('enemy-hp-text').textContent = `${enemyHP} HP`;
+            function checkBattleOutcome(lastSkillName, damageDealt) {
+                const resetStatsIfBuffed = () => {
+                    if (playerData._originalStats) {
+                        const original = playerData._originalStats;
+                        for (const key in original) {
+                            playerData[key] = original[key];
+                        }
+                        delete playerData._originalStats;
+                    }
+                };
 
                 if (enemyHP === 0) {
-                    // Win condition
                     playerData.kills[enemyKey] = (playerData.kills[enemyKey] || 0) + 1;
-                    playerData.gold = (playerData.gold || 0) + enemy.gold;
-                    playerData.hp = heroHP; // restore HP after victory
+                    playerData.gold += enemy.gold;
+                    playerData.hp = heroHP;
 
+                    resetStatsIfBuffed();
                     advanceQuestIfNeeded();
-
                     localStorage.setItem('player', JSON.stringify(playerData));
 
-                    resultModalBody.textContent = `You defeated the ${enemy.name}! You earned ${enemy.gold} gold.`;
+                    resultModalBody.textContent = `${lastSkillName} defeated the ${enemy.name}! You earned ${enemy.gold} gold.`;
                     resultModal.show();
-
                     resultModalBtn.onclick = () => {
                         resultModal.hide();
                         window.location.href = "game.html";
                     };
                 } else if (heroHP === 0) {
-                    // Lose condition
-                    playerData.hp = playerData.maxHp; // restore HP after defeat
+                    playerData.hp = playerData.maxHp;
+                    resetStatsIfBuffed();
                     localStorage.setItem('player', JSON.stringify(playerData));
 
                     resultModalBody.textContent = `You were defeated by the ${enemy.name}...`;
                     resultModal.show();
-
                     resultModalBtn.onclick = () => {
                         resultModal.hide();
                         window.location.href = "game.html";
                     };
                 } else {
-                    // Battle continues - save mid-fight HP
                     playerData.hp = heroHP;
+                    resetStatsIfBuffed();
                     localStorage.setItem('player', JSON.stringify(playerData));
                 }
+            }
+
+            function performHeroAttack(skill) {
+                const damage = calculateDamage(skill.power, playerData.attack, enemy.defense);
+                enemyHP = Math.max(0, enemyHP - damage);
+
+                const retaliation = enemyAttack();
+                heroHP = Math.max(0, heroHP - retaliation);
+
+                updateHPBars(retaliation, damage);
+                checkBattleOutcome(skill.name, damage);
+            }
+
+            function applyBuffSkill(buff) {
+                if (!playerData._originalStats) {
+                    playerData._originalStats = { ...playerData };
+                }
+
+                // Apply buff
+                playerData[buff.stat] += buff.value;
+                alert(`${buff.name} activated! Your ${buff.stat} increased by ${buff.value}.`);
+
+                // Enemy retaliates
+                const retaliation = enemyAttack();
+                heroHP = Math.max(0, heroHP - retaliation);
+                updateHPBars(retaliation, 0);
+                checkBattleOutcome(buff.name, 0); // No damage dealt by buff
+            }
+
+            // === Skill cooldown management ===
+            const skillCooldowns = {
+                basic: 0,
+                attackSkill: 0,
+                buffSkill: 0
+            };
+
+            // Utility to update buttons disabled state and show cooldown
+            function updateCooldownUI() {
+                function updateButton(id, cooldown, skillName) {
+                    const btn = document.getElementById(id);
+                    if (cooldown > 0) {
+                        btn.disabled = true;
+                        btn.textContent = `${skillName} (${cooldown})`;
+                        btn.classList.remove("btn-warning");
+                        btn.classList.add("btn-secondary");
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = skillName;
+                        btn.classList.remove("btn-secondary");
+                        btn.classList.add("btn-warning");
+                    }
+                }
+
+                updateButton("btn-basic", skillCooldowns.basic, playerData.skills.basic.name);
+                updateButton("btn-attack", skillCooldowns.attackSkill, playerData.skills.attackSkill.name);
+                updateButton("btn-buff-skill", skillCooldowns.buffSkill, playerData.skills.buffSkill.name);
+                document.getElementById("btn-run").textContent = "Run";
+            }
+
+            // Initialize buttons
+            updateCooldownUI();
+
+            // Clear skill highlight
+            function clearSkillHighlight() {
+                ["btn-basic", "btn-attack", "btn-buff-skill"].forEach(id => {
+                    document.getElementById(id).classList.remove("selected");
+                });
+            }
+
+            function highlightSelectedSkill(buttonId) {
+                clearSkillHighlight();
+                document.getElementById(buttonId).classList.add("selected");
+            }
+
+            // === Button handlers with cooldown check ===
+            document.getElementById("btn-basic").addEventListener("click", () => {
+                if (skillCooldowns.basic === 0) {
+                    selectedSkill = playerData.skills.basic;
+                    highlightSelectedSkill("btn-basic");
+                } else {
+                    alert(`Basic skill is on cooldown for ${skillCooldowns.basic} turn(s).`);
+                }
             });
+
+            document.getElementById("btn-attack").addEventListener("click", () => {
+                if (skillCooldowns.attackSkill === 0) {
+                    selectedSkill = playerData.skills.attackSkill;
+                    highlightSelectedSkill("btn-attack");
+                } else {
+                    alert(`Attack skill is on cooldown for ${skillCooldowns.attackSkill} turn(s).`);
+                }
+            });
+
+            document.getElementById("btn-buff-skill").addEventListener("click", () => {
+                if (skillCooldowns.buffSkill === 0) {
+                    selectedSkill = playerData.skills.buffSkill;
+                    highlightSelectedSkill("btn-buff-skill");
+                } else {
+                    alert(`Buff skill is on cooldown for ${skillCooldowns.buffSkill} turn(s).`);
+                }
+            });
+
+            document.getElementById("btn-run").addEventListener("click", () => {
+                window.location.href = "game.html";
+            });
+
+            document.getElementById("attackBtn").addEventListener("click", () => {
+                if (!selectedSkill) {
+                    alert("Please select a skill first!");
+                    return;
+                }
+
+                // Double-check cooldown before executing skill
+                const keyMap = {
+                    [playerData.skills.basic.name]: "basic",
+                    [playerData.skills.attackSkill.name]: "attackSkill",
+                    [playerData.skills.buffSkill.name]: "buffSkill"
+                };
+                const skillKey = keyMap[selectedSkill.name];
+
+                if (skillCooldowns[skillKey] > 0) {
+                    alert(`${selectedSkill.name} is on cooldown for ${skillCooldowns[skillKey]} more turn(s).`);
+                    return;
+                }
+
+                // Use skill
+                if (selectedSkill.type === "buff") {
+                    applyBuffSkill(selectedSkill);
+                } else {
+                    performHeroAttack(selectedSkill);
+                }
+
+                // Set cooldown for used skill
+                if (skillKey === "attackSkill") {
+                    skillCooldowns.attackSkill = 3;  // example: 3 turn cooldown
+                } else if (skillKey === "buffSkill") {
+                    skillCooldowns.buffSkill = 2;    // example: 2 turn cooldown
+                } else if (skillKey === "basic") {
+                    skillCooldowns.basic = 0;        // no cooldown for basic skill
+                }
+
+                // Decrement cooldowns for other skills (except the one just used)
+                for (const key in skillCooldowns) {
+                    if (key !== skillKey && skillCooldowns[key] > 0) {
+                        skillCooldowns[key]--;
+                    }
+                }
+
+                updateCooldownUI();
+                selectedSkill = null;
+                clearSkillHighlight();
+            });
+
         });
     </script>
+
+
+
 
 
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

@@ -81,68 +81,18 @@
                 </div>
                 <div class="col-md-4">
                     <div class="card text-center">
-                        <h3>Slime</h3>
-                        <img src="assets/img/slime.gif" alt="" />
+                        <h3>Chopper</h3>
+                        <img src="assets/img/chopper.gif" alt="" />
                         <p>Swift and agile, excels in ranged combat and evasion.</p>
-                        <a href="index.html?character=slime" class="btn btn-custom">Choose 🧪</a>
+                        <a href="index.html?character=slime" class="btn py-3 btn-secondary" style="pointer-events: none; opacity: 0.6;">Comming soon <i class="bi bi-lock"></i></a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <script src="assets/js/main.js"></script>
     <script>
-        // Toggle dark mode button
-        const hero = document.querySelector('.hero');
-        const toggleButton = document.getElementById('toggleLight');
-        const dragons = document.querySelectorAll('.drag-overlay');
-        const toggleIcon = document.getElementById('toggleIcon');
-
-        toggleButton.addEventListener('click', () => {
-            hero.classList.toggle('dark-mode');
-
-            if (hero.classList.contains('dark-mode')) {
-                toggleIcon.classList.remove('bi-moon-fill');
-                toggleIcon.classList.add('bi-sun-fill');
-                toggleButton.classList.remove('btn-outline-light');
-                toggleButton.classList.add('btn-outline-warning');
-            } else {
-                toggleIcon.classList.remove('bi-sun-fill');
-                toggleIcon.classList.add('bi-moon-fill');
-                toggleButton.classList.remove('btn-outline-warning');
-                toggleButton.classList.add('btn-outline-light');
-            }
-        });
-
-        hero.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-
-            hero.style.setProperty('--mouse-x', `${x}%`);
-            hero.style.setProperty('--mouse-y', `${y}%`);
-
-            if (hero.classList.contains('dark-mode')) {
-                const mouseX = e.clientX;
-                const mouseY = e.clientY;
-
-                dragons.forEach((dragon) => {
-                    const rect = dragon.getBoundingClientRect();
-                    const dragonCenterX = rect.left + rect.width / 2;
-                    const dragonCenterY = rect.top + rect.height / 2;
-
-                    const distance = Math.hypot(mouseX - dragonCenterX, mouseY - dragonCenterY);
-
-                    if (distance < 150) {
-                        dragon.classList.add('lit');
-                    } else {
-                        dragon.classList.remove('lit');
-                    }
-                });
-            } else {
-                dragons.forEach((dragon) => dragon.classList.remove('lit'));
-            }
-        });
-
         // Helper to get query param from URL
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -152,12 +102,28 @@
         // Save player stats to localStorage based on hero type
         function chooseHero(heroType) {
             const starterStats = {
-                warrior: { hp: 100, maxHp: 100, attack: 35, defense: 25, speed: 15 },
-                wizard: { hp: 100, maxHp: 100, attack: 40, defense: 20, speed: 15 },
-                slime: { hp: 100, maxHp: 100, attack: 20, defense: 20, speed: 35 },
+                warrior: { hp: 100, maxHp: 100, attack: 15, defense: 20, speed: 10 },
+                wizard: { hp: 100, maxHp: 100, attack: 20, defense: 10, speed: 15 },
+                slime: { hp: 100, maxHp: 100, attack: 10, defense: 15, speed: 20 },
             };
 
-            const stats = starterStats[heroType] || { hp: 100, maxHp: 100, attack: 30, defense: 10, speed: 20 };
+            const skills = {
+                warrior: {
+                    attackSkill: { name: "Sword Slash", type: "attack", power: 20 },
+                    buffSkill: { name: "Fortify Armor", type: "buff", stat: "defense", value: 3 }
+                },
+                wizard: {
+                    attackSkill: { name: "Arcane Burst", type: "attack", power: 25 },
+                    buffSkill: { name: "Power Surge", type: "buff", stat: "attack", value: 3 }
+                },
+                slime: {
+                    attackSkill: { name: "Slime Whip", type: "attack", power: 15 },
+                    buffSkill: { name: "Quicken", type: "buff", stat: "speed", value: 3 }
+                }
+            };
+
+            const stats = starterStats[heroType] || { hp: 100, maxHp: 100, attack: 15, defense: 15, speed: 15 };
+            const skillSet = skills[heroType];
 
             const player = {
                 character: heroType,
@@ -168,8 +134,14 @@
                 defense: stats.defense,
                 speed: stats.speed,
                 gold: 150,
+                inventory: [],
                 kills: { slime: 0, wolf: 0, jessica: 0, dragon: 0 },
-                currentQuestIndex: 0
+                currentQuestIndex: 0,
+                skills: {
+                    basic: { name: "Basic Attack", type: "attack", power: 10 },
+                    attackSkill: skillSet.attackSkill,
+                    buffSkill: skillSet.buffSkill
+                }
             };
 
             localStorage.setItem('player', JSON.stringify(player));
