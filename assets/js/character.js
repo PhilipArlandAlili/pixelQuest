@@ -54,29 +54,29 @@ function getQuestText(quest, playerData) {
 const swordLevels = [
     { level: 1, name: "Ironfang Blade", description: "A reliable iron sword passed down by village warriors. Sturdy and sharp.", price: 150, image: "assets/img/items/l1-sword.png", effect: { attack: 10 } },
     { level: 2, name: "Steelfang Saber", description: "Forged with refined steel, this saber bites deeper with every strike.", price: 300, image: "assets/img/items/l2-sword.png", effect: { attack: 20 } },
-    { level: 3, name: "Kingsplitter Edge", description: "A gleaming blade said to have cleaved a tyrant's crown in a single blow.", price: 600, image: "assets/img/items/l3-sword.png", effect: { attack: 40 } },
-    { level: 4, name: "Blade of the Eternal Oath", description: "A mythical sword that radiates ancient power, bound by a sacred vow of vengeance.", price: 1200, image: "assets/img/items/l4-sword.png", effect: { attack: 80 } }
+    { level: 3, name: "Kingsplitter Edge", description: "A gleaming blade said to have cleaved a tyrant's crown in a single blow.", price: 600, image: "assets/img/items/l3-sword.png", effect: { attack: 30 } },
+    { level: 4, name: "Blade of the Eternal Oath", description: "A mythical sword that radiates ancient power, bound by a sacred vow of vengeance.", price: 1200, image: "assets/img/items/l4-sword.png", effect: { attack: 50 } }
 ];
 
 const staffLevels = [
     { level: 1, name: "Emberwood Staff I", description: "A charred wooden staff warm to the touch, crackling with embers.", price: 150, image: "assets/img/items/l1-staff.png", effect: { attack: 10 } },
     { level: 2, name: "Blazing Branch II", description: "This staff glows with a steady flame, scorching anything nearby.", price: 300, image: "assets/img/items/l2-staff.png", effect: { attack: 20 } },
-    { level: 3, name: "Inferno Rod III", description: "Forged in dragonfire, this rod unleashes waves of searing heat.", price: 600, image: "assets/img/items/l3-staff.png", effect: { attack: 40 } },
-    { level: 4, name: "Hellfire Staff IV", description: "A legendary staff wreathed in eternal flames, born from volcanic fury.", price: 1200, image: "assets/img/items/l4-staff.png", effect: { attack: 80 } }
+    { level: 3, name: "Inferno Rod III", description: "Forged in dragonfire, this rod unleashes waves of searing heat.", price: 600, image: "assets/img/items/l3-staff.png", effect: { attack: 30 } },
+    { level: 4, name: "Hellfire Staff IV", description: "A legendary staff wreathed in eternal flames, born from volcanic fury.", price: 1200, image: "assets/img/items/l4-staff.png", effect: { attack: 50 } }
 ];
 
 const slimeLevels = [
     { level: 1, name: "slime of Valor I", description: "A basic mighty blade that boosts your attack power moderately.", price: 150, image: "assets/img/items/l1-sword.png", effect: { attack: 10 } },
     { level: 2, name: "slime of Valor II", description: "A stronger blade with enhanced attack power.", price: 300, image: "assets/img/items/l2-sword.png", effect: { attack: 20 } },
     { level: 3, name: "slime of Valor III", description: "A powerful blade that greatly boosts your attack.", price: 600, image: "assets/img/items/l3-sword.png", effect: { attack: 40 } },
-    { level: 4, name: "slime of Valor IV", description: "The ultimate sword with devastating attack power.", price: 1200, image: "assets/img/items/l4-sword.png", effect: { attack: 80 } }
+    { level: 4, name: "slime of Valor IV", description: "The ultimate sword with devastating attack power.", price: 1200, image: "assets/img/items/l4-sword.png", effect: { attack: 50 } }
 ];
 
 const armorLevels = [
     { level: 1, name: "Steel Armor I", description: "Basic steel armor that provides moderate physical defense.", price: 200, image: "assets/img/items/l1-armor.png", effect: { defense: 10 } },
     { level: 2, name: "Steel Armor II", description: "Sturdy steel armor with enhanced defense.", price: 400, image: "assets/img/items/l2-armor.png", effect: { defense: 20 } },
-    { level: 3, name: "Steel Armor III", description: "Heavy steel armor that greatly boosts your defense.", price: 800, image: "assets/img/items/l3-armor.png", effect: { defense: 40 } },
-    { level: 4, name: "Steel Armor IV", description: "The ultimate armor with exceptional physical defense.", price: 1600, image: "assets/img/items/l4-armor.png", effect: { defense: 80 } }
+    { level: 3, name: "Steel Armor III", description: "Heavy steel armor that greatly boosts your defense.", price: 800, image: "assets/img/items/l3-armor.png", effect: { defense: 30 } },
+    { level: 4, name: "Steel Armor IV", description: "The ultimate armor with exceptional physical defense.", price: 1600, image: "assets/img/items/l4-armor.png", effect: { defense: 50 } }
 ];
 
 const storeItemsBase = [
@@ -90,30 +90,15 @@ const weaponLevelsByCharacter = {
 };
 
 function getCurrentWeaponLevel() {
-    const levels = weaponLevelsByCharacter[playerData.character];
-
-    if (!levels) {
-        console.error("Unknown character type:", playerData.character);
-        return swordLevels[0];
-    }
-
-    for (let i = levels.length - 1; i >= 0; i--) {
-        if (playerData.inventory.includes(levels[i].name)) {
-            return i + 1 < levels.length ? levels[i + 1] : levels[i];
-        }
-    }
-
-    return levels[0];
+    const weaponList = weaponLevelsByCharacter[playerData.character];
+    const level = playerData.weaponLevel ?? 0;
+    return weaponList[Math.min(level, weaponList.length - 1)];
 }
 
 
 function getCurrentArmorLevel() {
-    for (let i = armorLevels.length - 1; i >= 0; i--) {
-        if (playerData.inventory.includes(armorLevels[i].name)) {
-            return i + 1 < armorLevels.length ? armorLevels[i + 1] : armorLevels[i];
-        }
-    }
-    return armorLevels[0];
+    const level = playerData.armorLevel ?? 0;
+    return armorLevels[Math.min(level, armorLevels.length - 1)];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -126,20 +111,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById("fightBtn").addEventListener("click", () => {
-        if (!playerData.inventory || playerData.inventory.length === 0) {
+        if (!playerData.items || playerData.items.every(item => item === null)) {
             const itemModal = new bootstrap.Modal(document.getElementById('itemModal'));
             itemModal.show();
         } else {
             window.location.href = "game.html";
         }
     });
+
     document.getElementById("goToStoreBtn").addEventListener("click", () => {
         window.location.href = "character.html?#store";
     });
+
     document.getElementById("proceedBtn").addEventListener("click", () => {
         window.location.href = "game.html";
     });
-
 
     playerData.kills = playerData.kills || {
         slime: 0,
@@ -147,8 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         jessica: 0,
         dragon: 0
     };
-    if (!Array.isArray(playerData.items) || playerData.items.length !== 4) {
-        playerData.items = [null, null, null, null];
+    if (!Array.isArray(playerData.items) || playerData.items.length !== 3) {
+        playerData.items = [null, null, null];
     }
     playerData.inventory = playerData.inventory || [];
     playerData.currentQuestIndex = playerData.currentQuestIndex ?? 0;
@@ -226,14 +212,23 @@ document.getElementById('store-items').addEventListener('click', function (e) {
 
     playerData.gold -= item.price;
 
-    if (item.name.startsWith("Sword of Valor")) {
-        swordLevels.forEach(sword => {
-            const pos = playerData.inventory.indexOf(sword.name);
-            if (pos !== -1) playerData.inventory.splice(pos, 1);
-        });
+    const weaponList = weaponLevelsByCharacter[playerData.character];
+    const weaponIndex = weaponList.findIndex(w => w.name === item.name);
+    const armorIndex = armorLevels.findIndex(a => a.name === item.name);
+
+    if (weaponIndex !== -1) {
+        // Update weapon level, but only add to inventory
+        playerData.weaponLevel = weaponIndex + 1;
+        playerData.inventory.unshift(item.name);  // Add to inventory first
+    } else if (armorIndex !== -1) {
+        playerData.armorLevel = armorIndex + 1;
+        playerData.inventory.unshift(item.name);  // Add to inventory first
+    } else if (item.consumable) {
+        playerData.inventory.unshift(item.name);
     }
 
-    playerData.inventory.push(item.name);
+
+
     updateStats();
     saveData();
     renderInventory();
@@ -244,88 +239,138 @@ function renderItems() {
     const itemsContainer = document.getElementById('items');
     itemsContainer.innerHTML = '';
 
+    const slotLabels = ['Weapon', 'Armor', '???']; // Optional slot titles
+
     for (let i = 0; i < playerData.items.length; i++) {
         const item = playerData.items[i];
         const col = document.createElement('div');
-        col.className = 'col-4';
+        col.className = 'col-4 d-flex flex-column align-items-center';
+
+        let innerHTML = `<div class="text-center text-white small">${slotLabels[i]}</div>`;
 
         if (item) {
-            col.innerHTML = `
-                <div class="border border-dark rounded d-flex flex-column align-items-center bg-warning p-1"
+            innerHTML += `
+                <div class="border border-dark rounded d-flex flex-column align-items-center bg-warning p-2"
                     style="aspect-ratio: 1 / 1; cursor: pointer; max-width: 80px; max-height: 80px;" data-index="${i}">
                     <img src="${item.image}" alt="${item.name}" style="max-height: 40px; object-fit: contain;" />
                     <button class="btn btn-sm btn-danger unequip-btn p-0 mt-2" style="font-size: 0.6rem;">Unequip</button>
                 </div>
             `;
         } else {
-            col.innerHTML = `
-                <div class="border border-dark rounded bg-warning"
-                    style="aspect-ratio: 1 / 1; max-width: 80px; max-height: 80px;"></div>
+            innerHTML += `
+                <div class="border border-dark rounded bg-warning d-flex justify-content-center align-items-center"
+                    style="aspect-ratio: 1 / 1; max-width: 80px; max-height: 80px; width: 100%; height: 100%;">
+                    <span class="text-muted small">Empty</span>
+                </div>
             `;
         }
 
+        col.innerHTML = innerHTML;
         itemsContainer.appendChild(col);
     }
 }
 
+
 function findItemDataByName(name) {
-    return swordLevels.find(i => i.name === name) ||
+    // Flatten all weapon levels from weaponLevelsByCharacter
+    const allWeapons = Object.values(weaponLevelsByCharacter).flat();
+
+    return allWeapons.find(i => i.name === name) ||
         armorLevels.find(i => i.name === name) ||
         storeItemsBase.find(i => i.name === name) ||
         null;
 }
 
+
 function renderInventory() {
     const inventoryContainer = document.getElementById('inventory');
-    inventoryContainer.innerHTML = '';
+    inventoryContainer.innerHTML = ''; // Clear previous content
 
-    playerData.inventory.forEach((itemName, index) => {
-        const item = findItemDataByName(itemName);
-        if (!item) return;
+    if (playerData.inventory.length === 0) {
+        inventoryContainer.style.height = '280px';
+    } else {
+        playerData.inventory.forEach((itemName, index) => {
+            const item = findItemDataByName(itemName);
+            if (!item) return;
 
-        const col = document.createElement('div');
-        col.className = 'col-4 d-flex justify-content-center';
-        col.innerHTML = `
+            inventoryContainer.style.height = '280px';
+            const col = document.createElement('div');
+            col.className = 'col-4 d-flex justify-content-center';
+            col.innerHTML = `
             <div class="d-flex flex-column align-items-center p-1"
                 style="aspect-ratio: 1 / 1; max-width: 80px; max-height: 80px; cursor: pointer;" data-index="${index}">
                 <img src="${item.image}" alt="${item.name}" style="max-height: 40px; object-fit: contain;" />
                 <small class="text-light text-center" style="font-size: 0.6rem;">${item.name}</small>
                 ${item.consumable
-                ? '<button class="btn btn-sm btn-success mt-1 p-0 use-btn" style="font-size: 0.6rem;">Use</button>'
-                : '<button class="btn btn-sm btn-primary mt-1 p-0 equip-btn" style="font-size: 0.6rem;">Equip</button>'}
+                    ? '<button class="btn btn-sm btn-success mt-1 p-0 use-btn px-3" style="font-size: 0.6rem;">Use</button>'
+                    : '<button class="btn btn-sm btn-primary mt-1 p-0 equip-btn px-3" style="font-size: 0.6rem;">Equip</button>'}
             </div>
         `;
-        inventoryContainer.appendChild(col);
-    });
+            inventoryContainer.appendChild(col);
+        });
+    }
+
 }
+
 
 document.getElementById('inventory').addEventListener('click', (e) => {
     const btn = e.target;
     const parent = btn.closest('[data-index]');
     if (!parent) return;
+
     const index = parseInt(parent.dataset.index);
     const itemName = playerData.inventory[index];
     const item = findItemDataByName(itemName);
     if (!item) return;
 
-    if (btn.classList.contains('equip-btn')) {
-        const slot = playerData.items.findIndex(i => i === null);
-        if (slot === -1) return alert("No empty slot to equip.");
-        applyItemEffect(item);
-        playerData.items[slot] = item;
-        playerData.inventory.splice(index, 1);
-    } else if (btn.classList.contains('use-btn')) {
-        if (item.effect.hp) {
-            playerData.hp = Math.min(playerData.hp + item.effect.hp, 100); // Assuming max HP is 100
+    // Handle using a consumable
+    if (btn.classList.contains('use-btn') && item.consumable) {
+        if (item.effect?.hp) {
+            if (playerData.hp >= playerData.maxHp) {
+                return alert("You are already at full health!");
+            } else {
+                const currentHp = playerData.hp;
+                playerData.hp = Math.min(playerData.hp + item.effect.hp, playerData.maxHp);
+                const hpRestored = playerData.hp - currentHp;
+                alert(`You used ${item.name} and restored ${hpRestored} HP!`);
+            }
+            
         }
         playerData.inventory.splice(index, 1);
     }
+
+    // Handle equipping an item
+    if (btn.classList.contains('equip-btn') && !item.consumable) {
+        const allWeapons = Object.values(weaponLevelsByCharacter).flat();
+        const isWeapon = allWeapons.some(w => w.name === item.name);
+        const isArmor = armorLevels.some(a => a.name === item.name);
+
+        if (isWeapon) {
+            if (playerData.items[0]) {
+                return alert("You already have a weapon equipped.");
+            }
+            applyItemEffect(item);
+            playerData.items[0] = item;
+            playerData.inventory.splice(index, 1);
+        } else if (isArmor) {
+            if (playerData.items[1]) {
+                return alert("You already have armor equipped.");
+            }
+            applyItemEffect(item);
+            playerData.items[1] = item;
+            playerData.inventory.splice(index, 1);
+        } else {
+            alert("This item cannot be equipped.");
+        }
+    }
+
 
     updateStats();
     saveData();
     renderItems();
     renderInventory();
 });
+
 
 document.getElementById('items').addEventListener('click', (e) => {
     const btn = e.target;
@@ -344,6 +389,7 @@ document.getElementById('items').addEventListener('click', (e) => {
     renderItems();
     renderInventory();
 });
+
 
 function applyItemEffect(item) {
     if (item.effect.attack) playerData.attack += item.effect.attack;

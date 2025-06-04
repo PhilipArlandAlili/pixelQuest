@@ -42,10 +42,6 @@
 
                         <ul class="list-unstyled mb-0 px-3">
                             <li class="d-flex justify-content-between py-1 px-2 border-bottom border-secondary">
-                                <span class="fw-bold text-warning">Level:</span>
-                                <span id="hero-level" class="text-light"></span>
-                            </li>
-                            <li class="d-flex justify-content-between py-1 px-2 border-bottom border-secondary">
                                 <span class="fw-bold text-warning">HP:</span>
                                 <span id="hero-hp" class="text-danger fw-bold"></span>
                             </li>
@@ -72,7 +68,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-4 d-flex flex-column" style="height: 100%;">
                     <div class="text-center p-3">
                         <h3 class="mb-3 text-warning">Items</h3>
                         <div class="container">
@@ -81,11 +77,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-center p-3">
+                    <div class="text-center p-3 flex-grow-1 d-flex flex-column">
                         <h3 class="mb-3 text-warning">Inventory</h3>
-                        <div class="container bg-warning bg-opacity-50 rounded" style="height: 240px;">
-                            <div class="row g-2 h-100" id="inventory">
-
+                        <div class="container bg-warning bg-opacity-50 rounded p-2 flex-grow-1 overflow-auto">
+                            <div class="row g-2" id="inventory">
+                                <!-- Inventory items -->
                             </div>
                         </div>
                     </div>
@@ -118,13 +114,14 @@
             <div class="modal-content bg-dark text-light">
                 <div class="modal-header">
                     <h5 class="modal-title" id="itemModalLabel">No Items Found</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    You don't have any items. Do you wish to proceed?
+                    You don't have any items equipped. Do you wish to proceed?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-warning" id="goToStoreBtn" data-bs-dismiss="modal">No, go to Store</button>
+                    <button type="button" class="btn btn-outline-warning" id="goToStoreBtn" data-bs-dismiss="modal">No,
+                        go to Store</button>
                     <button id="proceedBtn" type="button" class="btn btn-warning">Proceed</button>
                 </div>
             </div>
