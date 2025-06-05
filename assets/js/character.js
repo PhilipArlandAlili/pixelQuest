@@ -52,35 +52,36 @@ function getQuestText(quest, playerData) {
 }
 
 const swordLevels = [
-    { level: 1, name: "Ironfang Blade", description: "A reliable iron sword passed down by village warriors. Sturdy and sharp.", price: 150, image: "assets/img/items/l1-sword.png", effect: { attack: 10 } },
-    { level: 2, name: "Steelfang Saber", description: "Forged with refined steel, this saber bites deeper with every strike.", price: 300, image: "assets/img/items/l2-sword.png", effect: { attack: 20 } },
-    { level: 3, name: "Kingsplitter Edge", description: "A gleaming blade said to have cleaved a tyrant's crown in a single blow.", price: 600, image: "assets/img/items/l3-sword.png", effect: { attack: 30 } },
-    { level: 4, name: "Blade of the Eternal Oath", description: "A mythical sword that radiates ancient power, bound by a sacred vow of vengeance.", price: 1200, image: "assets/img/items/l4-sword.png", effect: { attack: 50 } }
+    { level: 1, name: "Ironfang Blade", description: "A reliable iron sword passed down by village warriors. Sturdy and sharp.", price: 100, image: "assets/img/items/l1-sword.png", effect: { attack: 10 } },
+    { level: 2, name: "Steelfang Saber", description: "Forged with refined steel, this saber bites deeper with every strike.", price: 250, image: "assets/img/items/l2-sword.png", effect: { attack: 20 } },
+    { level: 3, name: "Kingsplitter Edge", description: "A gleaming blade said to have cleaved a tyrant's crown in a single blow.", price: 400, image: "assets/img/items/l3-sword.png", effect: { attack: 30 } },
+    { level: 4, name: "Blade of the Eternal Oath", description: "A mythical sword that radiates ancient power, bound by a sacred vow of vengeance.", price: 800, image: "assets/img/items/l4-sword.png", effect: { attack: 50 } }
 ];
 
+
 const staffLevels = [
-    { level: 1, name: "Emberwood Staff I", description: "A charred wooden staff warm to the touch, crackling with embers.", price: 150, image: "assets/img/items/l1-staff.png", effect: { attack: 10 } },
-    { level: 2, name: "Blazing Branch II", description: "This staff glows with a steady flame, scorching anything nearby.", price: 300, image: "assets/img/items/l2-staff.png", effect: { attack: 20 } },
-    { level: 3, name: "Inferno Rod III", description: "Forged in dragonfire, this rod unleashes waves of searing heat.", price: 600, image: "assets/img/items/l3-staff.png", effect: { attack: 30 } },
-    { level: 4, name: "Hellfire Staff IV", description: "A legendary staff wreathed in eternal flames, born from volcanic fury.", price: 1200, image: "assets/img/items/l4-staff.png", effect: { attack: 50 } }
+    { level: 1, name: "Emberwood Staff I", description: "A charred wooden staff warm to the touch, crackling with embers.", price: 100, image: "assets/img/items/l1-staff.png", effect: { attack: 10 } },
+    { level: 2, name: "Blazing Branch II", description: "This staff glows with a steady flame, scorching anything nearby.", price: 250, image: "assets/img/items/l2-staff.png", effect: { attack: 20 } },
+    { level: 3, name: "Inferno Rod III", description: "Forged in dragonfire, this rod unleashes waves of searing heat.", price: 400, image: "assets/img/items/l3-staff.png", effect: { attack: 30 } },
+    { level: 4, name: "Hellfire Staff IV", description: "A legendary staff wreathed in eternal flames, born from volcanic fury.", price: 800, image: "assets/img/items/l4-staff.png", effect: { attack: 50 } }
 ];
 
 const slimeLevels = [
-    { level: 1, name: "slime of Valor I", description: "A basic mighty blade that boosts your attack power moderately.", price: 150, image: "assets/img/items/l1-sword.png", effect: { attack: 10 } },
-    { level: 2, name: "slime of Valor II", description: "A stronger blade with enhanced attack power.", price: 300, image: "assets/img/items/l2-sword.png", effect: { attack: 20 } },
-    { level: 3, name: "slime of Valor III", description: "A powerful blade that greatly boosts your attack.", price: 600, image: "assets/img/items/l3-sword.png", effect: { attack: 40 } },
-    { level: 4, name: "slime of Valor IV", description: "The ultimate sword with devastating attack power.", price: 1200, image: "assets/img/items/l4-sword.png", effect: { attack: 50 } }
+    { level: 1, name: "slime of Valor I", description: "A basic mighty blade that boosts your attack power moderately.", price: 100, image: "assets/img/items/l1-sword.png", effect: { attack: 10 } },
+    { level: 2, name: "slime of Valor II", description: "A stronger blade with enhanced attack power.", price: 250, image: "assets/img/items/l2-sword.png", effect: { attack: 20 } },
+    { level: 3, name: "slime of Valor III", description: "A powerful blade that greatly boosts your attack.", price: 400, image: "assets/img/items/l3-sword.png", effect: { attack: 40 } },
+    { level: 4, name: "slime of Valor IV", description: "The ultimate sword with devastating attack power.", price: 800, image: "assets/img/items/l4-sword.png", effect: { attack: 50 } }
 ];
 
 const armorLevels = [
-    { level: 1, name: "Steel Armor I", description: "Basic steel armor that provides moderate physical defense.", price: 200, image: "assets/img/items/l1-armor.png", effect: { defense: 10 } },
-    { level: 2, name: "Steel Armor II", description: "Sturdy steel armor with enhanced defense.", price: 400, image: "assets/img/items/l2-armor.png", effect: { defense: 20 } },
-    { level: 3, name: "Steel Armor III", description: "Heavy steel armor that greatly boosts your defense.", price: 800, image: "assets/img/items/l3-armor.png", effect: { defense: 30 } },
-    { level: 4, name: "Steel Armor IV", description: "The ultimate armor with exceptional physical defense.", price: 1600, image: "assets/img/items/l4-armor.png", effect: { defense: 50 } }
+    { level: 1, name: "Steel Armor I", description: "Basic steel armor that provides moderate physical defense.", price: 100, image: "assets/img/items/l1-armor.png", effect: { defense: 10 } },
+    { level: 2, name: "Steel Armor II", description: "Sturdy steel armor with enhanced defense.", price: 250, image: "assets/img/items/l2-armor.png", effect: { defense: 20 } },
+    { level: 3, name: "Steel Armor III", description: "Heavy steel armor that greatly boosts your defense.", price: 400, image: "assets/img/items/l3-armor.png", effect: { defense: 30 } },
+    { level: 4, name: "Steel Armor IV", description: "The ultimate armor with exceptional physical defense.", price: 800, image: "assets/img/items/l4-armor.png", effect: { defense: 50 } }
 ];
 
 const storeItemsBase = [
-    { name: "Health Potion", description: "Restores 50 HP instantly when consumed.", price: 50, image: "assets/img/items/potion.png", effect: { hp: 50 }, consumable: true }
+    { name: "Health Potion", description: "Restores 50 HP instantly when consumed.", price: 25, image: "assets/img/items/potion.png", effect: { hp: 50 }, consumable: true }
 ];
 
 const weaponLevelsByCharacter = {
@@ -176,9 +177,25 @@ function renderStore() {
     const currentArmor = getCurrentArmorLevel();
     const storeItems = [currentWeapon, currentArmor, ...storeItemsBase];
 
+    const maxWeaponLevelReached = playerData.weaponLevel >= weaponLevelsByCharacter[playerData.character].length;
+    const maxArmorLevelReached = playerData.armorLevel >= armorLevels.length;
+
     storeItems.forEach((item, index) => {
         const col = document.createElement('div');
         col.className = 'col-md-4';
+
+        // Determine if this is the weapon or armor item (first two items)
+        let isBuyDisabled = false;
+        let buttonLabel = 'Buy';
+
+        if (index === 0 && maxWeaponLevelReached) {
+            isBuyDisabled = true;
+            buttonLabel = 'Max Level';
+        } else if (index === 1 && maxArmorLevelReached) {
+            isBuyDisabled = true;
+            buttonLabel = 'Max Level';
+        }
+
         col.innerHTML = `
             <div class="card h-100 bg-success bg-opacity-50 text-light shadow-sm">
                 <img src="${item.image}" class="card-img-top p-3" alt="${item.name}" style="height: 180px; object-fit: contain;" />
@@ -187,7 +204,10 @@ function renderStore() {
                     <p class="card-text flex-grow-1">${item.description}</p>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <span class="fw-bold text-warning"><i class="bi bi-coin"></i> ${item.price} Gold</span>
-                        <button class="btn btn-warning btn-sm fw-bold buy-btn" data-index="${index}">Buy</button>
+                        <button class="btn btn-sm fw-bold buy-btn ${isBuyDisabled ? 'btn-secondary' : 'btn-warning'}" 
+                            data-index="${index}" ${isBuyDisabled ? 'disabled' : ''}>
+                            ${buttonLabel}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -195,6 +215,7 @@ function renderStore() {
         storeContainer.appendChild(col);
     });
 }
+
 
 document.getElementById('store-items').addEventListener('click', function (e) {
     if (!e.target.classList.contains('buy-btn')) return;
@@ -309,7 +330,6 @@ function renderInventory() {
             inventoryContainer.appendChild(col);
         });
     }
-
 }
 
 
@@ -334,7 +354,7 @@ document.getElementById('inventory').addEventListener('click', (e) => {
                 const hpRestored = playerData.hp - currentHp;
                 alert(`You used ${item.name} and restored ${hpRestored} HP!`);
             }
-            
+
         }
         playerData.inventory.splice(index, 1);
     }

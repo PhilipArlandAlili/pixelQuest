@@ -15,6 +15,57 @@ document.addEventListener('DOMContentLoaded', () => {
     playerData.maxHp = playerData.maxHp ?? 100;
     playerData.gold = playerData.gold ?? 250;
 
+    function renderBattleInventory() {
+        const battleInventory = document.getElementById('battle-inventory');
+        battleInventory.innerHTML = ''; // Clear previous content
+
+        // Count how many Health Potions
+        const potions = playerData.inventory.filter(name => name === 'Health Potion');
+        if (potions.length === 0) return;
+
+        const potionItem = findItemDataByName('Health Potion');
+        if (!potionItem) return;
+
+        const container = document.createElement('div');
+        container.className = 'd-flex flex-column align-items-center';
+
+        container.innerHTML = `
+        <img src="${potionItem.image}" alt="Health Potion" style="height: 50px;" />
+        <small class="text-light">${potionItem.name} (${potions.length})</small>
+        <button id="use-health-potion" class="btn btn-sm btn-success mt-1 px-3" style="font-size: 0.8rem;">
+            Use
+        </button>
+    `;
+
+        battleInventory.appendChild(container);
+
+        // Add click listener
+        document.getElementById('use-health-potion').addEventListener('click', () => {
+            if (playerData.hp >= playerData.maxHp) {
+                return alert("You're already at full health!");
+            }
+
+            const currentHp = playerData.hp;
+            playerData.hp = Math.min(playerData.hp + potionItem.effect.hp, playerData.maxHp);
+            const restored = playerData.hp - currentHp;
+
+            alert(`You used a Health Potion and restored ${restored} HP!`);
+
+            // Remove one potion from inventory
+            const potionIndex = playerData.inventory.indexOf('Health Potion');
+            if (potionIndex !== -1) {
+                playerData.inventory.splice(potionIndex, 1);
+            }
+
+            // Save, update stats, and re-render
+            saveData();
+            updateBattleStats();  // ← you may need to create this if it's not yet in your file
+            renderBattleInventory();
+        });
+    }
+
+
+
 
     // === Set hero image ===
     if (playerData.character) {
@@ -240,24 +291,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { once: true });
     }
 
-
-
-
     function applyBuffSkill(buff) {
         if (!playerData._originalStats) {
             playerData._originalStats = { ...playerData };
         }
 
-        // Apply buff
-        playerData[buff.stat] += buff.value;
-        alert(`${buff.name} activated! Your ${buff.stat} increased by ${buff.value}.`);
+        const heroImg = document.querySelector('.hero-img');
+        const enemyImg = document.getElementById('enemy-img');
 
-        // Enemy retaliates
-        const retaliation = enemyAttack();
-        heroHP = Math.max(0, heroHP - retaliation);
-        updateHPBars(retaliation, 0);
-        checkBattleOutcome(buff.name, 0); // No damage dealt by buff
+        // Play hero buff animation
+        heroImg.classList.add('buff-animation');
+        heroImg.addEventListener('animationend', () => {
+            heroImg.classList.remove('buff-animation');
+
+            // Apply the actual buff
+            playerData[buff.stat] += buff.value;
+            alert(`${buff.name} activated! Your ${buff.stat} increased by ${buff.value}.`);
+
+            // Enemy turn (retaliation) if still alive
+            if (enemyHP > 0) {
+                setTimeout(() => {
+                    // Enemy attacks animation
+                    enemyImg.classList.add('monster-attack');
+
+                    enemyImg.addEventListener('animationend', () => {
+                        enemyImg.classList.remove('monster-attack');
+
+                        // Hero gets hit animation
+                        heroImg.classList.add('hero-hit');
+                        setTimeout(() => {
+                            heroImg.classList.remove('hero-hit');
+                        }, 300);
+
+                        const retaliation = enemyAttack();
+                        heroHP = Math.max(0, heroHP - retaliation);
+
+                        updateHPBars(retaliation, 0);
+                        checkBattleOutcome(buff.name, 0); // Buff causes no damage
+
+                    }, { once: true });
+                }, 600);
+            } else {
+                // If enemy died before retaliation
+                checkBattleOutcome(buff.name, 0);
+            }
+
+        }, { once: true });
     }
+
+
+
 
     // === Skill cooldown management ===
     const skillCooldowns = {
